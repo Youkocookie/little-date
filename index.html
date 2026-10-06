@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我們的小小約</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #F4F9FD;
+            --bg-card: #FFFFFF;
+            --accent-blue: #3888D6;
+            --accent-light: #E3F1FC;
+            --text-main: #2C3E50;
+            --text-sub: #64788B;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+            background: linear-gradient(160deg, #EDF6FC 0%, #F8FBFE 50%, #E6F2FA 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(186, 220, 247, 0.7);
+            box-shadow: 0 12px 32px -8px rgba(56, 136, 214, 0.1);
+        }
+        .option-btn {
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1.5px solid #E1EEF8;
+            background: #FFFFFF;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: #74B4F0;
+            box-shadow: 0 8px 20px -6px rgba(56, 136, 214, 0.14);
+        }
+        .fade-enter {
+            animation: fadeInSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .ticket-cutout {
+            position: relative;
+        }
+        .ticket-cutout::before,
+        .ticket-cutout::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            background-color: #EEF6FC;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            border: 1px solid rgba(186, 220, 247, 0.6);
+        }
+        .ticket-cutout::before {
+            left: -13px;
+        }
+        .ticket-cutout::after {
+            right: -13px;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4F9FD;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #BDD8F0;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="py-6 px-4 sm:py-10 sm:px-6 flex flex-col items-center justify-between min-h-screen">
+
+    <!-- Top Header & Navigation -->
+    <header class="w-full max-w-xl mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <button id="backBtn" onclick="goBack()" class="hidden items-center gap-1.5 text-sm font-medium text-sky-700 bg-white/80 hover:bg-white px-3.5 py-2 rounded-full border border-sky-100 shadow-sm transition-all active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                <span>我再重新想一次</span>
+            </button>
+            <div id="brandBadge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100/80 text-sky-800 text-xs font-semibold tracking-wider">
+                <span>❄️ 我們的小小約</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="resetTopBtn" onclick="resetApp()" class="hidden text-xs text-slate-400 hover:text-sky-600 transition-colors px-2 py-1">
+                    重新開始 ↻
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div id="progressContainer" class="w-full bg-sky-100/70 h-1.5 rounded-full overflow-hidden">
+            <div id="progressBar" class="bg-sky-500 h-full rounded-full transition-all duration-500 ease-out" style="width: 12%;"></div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Container -->
+    <main id="appContainer" class="w-full max-w-xl glass-card rounded-3xl p-6 sm:p-8 my-auto fade-enter">
+        <!-- Dynamic Content Injected by JS -->
+    </main>
+
+    <!-- Menu Viewer Modal -->
+    <div id="menuModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl border border-sky-100 overflow-hidden fade-enter">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-sky-50 to-white border-b border-sky-100 flex items-center justify-between">
+                <div>
+                    <span id="menuModalTag" class="text-[11px] font-semibold text-sky-600 bg-sky-100/80 px-2.5 py-0.5 rounded-full">必點推薦＆價位攻略</span>
+                    <h3 id="menuModalTitle" class="text-lg font-bold text-slate-800 mt-1">餐廳名稱</h3>
+                </div>
+                <button onclick="closeMenuModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold transition-colors">✕</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div id="menuModalBody" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <!-- Injected dynamically -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+                <button onclick="closeMenuModal()" class="text-xs font-semibold bg-slate-200/80 hover:bg-slate-300/80 text-slate-700 px-4 py-2 rounded-xl transition-colors">
+                    關閉視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Message Box -->
+    <div id="toastBox" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform translate-y-2">
+        <div class="bg-slate-800/95 text-white text-sm px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-slate-700">
+            <span id="toastIcon">✨</span>
+            <span id="toastText">已複製到剪貼簿！</span>
+        </div>
+    </div>
+
+    <!-- Footer Info -->
+    <footer class="w-full max-w-xl mt-6 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3">
+        <span>📍 起點：新北土城醫院 ｜ 🎿 終點站：新豐小叮噹滑雪場 (17:30–20:30 夜滑包場)</span>
+    </footer>
+
+    <script>
+        const DB = {
+            restaurants: {
+                tucheng: {
+                    name: "新北・土城周邊",
+                    subtitle: "吃飽再上",
+                    brunch: [
+                        {
+                            id: "tc_b1",
+                            name: "啖餅坊手工蛋餅專賣店",
+                            hours: "06:00–14:00",
+                            tag: "土城超人氣必吃",
+                            desc: "手工現桿蛋餅皮酥Q有嚼勁，必加店家自製小魚乾辣椒！",
+                            parking: "巷弄較窄，建議臨停外帶，或停「海山捷運站周邊收費停車場／裕民路車格」走進去。",
+                            note: "📌 貼心提醒：要先電話預訂比較好（例如 09:15 訂、09:50 取，店家蠻準時的！）",
+                            menuHighlights: [
+                                "🔥 招牌手工蛋餅：九層塔蛋餅 ($45)、玉米起司蛋餅 ($55)、雙蛋蛋餅、高麗菜蛋餅",
+                                "✨ 飽足感升級：蛋餅皆可加價「加飯 (+$15)」或「加起司」，餅皮現桿外酥內Q超有嚼勁",
+                                "🌶️ 靈魂必加：店家自製「小魚乾辣椒醬」，香氣超濃郁，敢吃辣一定要加！",
+                                "🥤 飲品搭配：古早味紅茶、非基改濃豆漿、鮮奶茶",
+                                "💰 價位與攻略：平均約 $50 – $100 / 人；現場等較久，強烈建議出發前先打電話預訂！"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=啖餅坊手工蛋餅專賣店+土城"
+                        },
+                        {
+                            id: "tc_b2",
+                            name: "享空間 Sharing Space（或 漩・漫拾）",
+                            hours: "10:00–17:30",
+                            tag: "土城老宅工業文青風",
+                            desc: "位於土城中華路一段的老宅改建工業文青風早午餐，也可選金城路三段的「漩・漫拾」吃人氣熱壓吐司與早午餐拼盤！",
+                            parking: "中華路一段沿線車格。",
+                            menuHighlights: [
+                                "🍽️ 享空間必點：經典早午餐大拼盤、松露野菇燉飯、煙燻鮭魚木碗沙拉",
+                                "🥪 漩・漫拾必點：熔岩起司熱壓吐司、漫拾大早餐拼盤、酥脆雞腿排早午餐",
+                                "☕ 甜點與飲品：手沖單品咖啡、靜岡抹茶拿鐵、每日限量手作巴斯克蛋糕",
+                                "✨ 空間亮點：享空間為紅磚老宅結合綠植工業風，採光好、桌距寬敞不擁擠",
+                                "💰 價位區間：約 $160 – $320 / 人（無收服務費，適合悠哉聊天吃飽）"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=享空間+Sharing+Space+土城"
+                        },
+                        {
+                            id: "tc_b3",
+                            name: "早安！陽光花園（日月光店）",
+                            hours: "06:00–14:30",
+                            tag: "應該是走路能到",
+                            desc: "就在日月光廣場旁巷弄的溫馨質感早午餐，從拼盤、厚蛋吐司到漢堡都有，環境明亮舒服！",
+                            parking: "這個還好，我們好像可以走路過去！",
+                            menuHighlights: [
+                                "🍳 人氣早午餐拼盤：陽光經典大早餐、嫩煎雞腿排拼盤、德式香腸歐姆蛋拼盤（附沙拉＆薯條）",
+                                "🍔 漢堡與吐司：花生醬培根厚牛堡、卡啦雞腿總匯吐司、肉蛋吐司系列",
+                                "🥞 台式與點心：千層酥皮蛋餅、蘿蔔糕淋蛋、黃金脆薯、雞塊",
+                                "🥤 飲品選擇：招牌鮮奶茶、研磨拿鐵、清爽果茶",
+                                "💰 價位區間：約 $80 – $220 / 人（CP值高、出餐快，離土城醫院走路就能到！）"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=早安陽光花園+土城"
+                        }
+                    ],
+                    meal: [
+                        {
+                            id: "tc_m1",
+                            name: "涓豆腐（土城日月光店）",
+                            hours: "11:00–22:00",
+                            tag: "小菜無限續",
+                            desc: "韓式嫩豆腐煲配石鍋飯，小菜無限續，吃飽超有力氣去滑雪。",
+                            parking: "直接停「日月光廣場地下停車場」",
+                            menuHighlights: [
+                                "🍲 招牌嫩豆腐煲（皆附紫米石鍋飯）：海陸綜合嫩豆腐煲 ($358)、韓式泡菜嫩豆腐煲 ($328)、起司嫩豆腐煲",
+                                "🥞 特色單點必吃：綜合海鮮煎餅（可選香酥厚片或薄片）、韓式起司烘蛋捲、春川辣炒雞",
+                                "🍗 人氣炸物：韓式雙味炸雞（原味＋洋釀醬味）、黃金酥炸嫩豆腐",
+                                "✨ ：韓式小菜免費續加，餐後還附黑糖香柚豆花！",
+                                "💰 價位區間：約 $350 – $500 / 人（可直接點雙人套餐更划算）"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=涓豆腐+土城日月光店"
+                        },
+                        {
+                            id: "tc_m2",
+                            name: "夏記羊肉（原土城正宗岡山羊肉）",
+                            hours: "中午 11:00–14:00",
+                            tag: "在地人氣名店",
+                            desc: "聽說是超級無敵好吃",
+                            parking: "明德路二段沿線有路邊停車格，或停附近的「新北高工地下停車場」步行約 4 分鐘。",
+                            menuHighlights: [
+                                "🍖 招牌必點湯品：當歸帶皮羊肉湯、當歸瘦肉湯、大骨湯（湯頭甘甜溫潤完全不腥，內用可加湯！）",
+                                "🔥 人氣主食：招牌羊油麵線（必加蒜泥與豆瓣醬）、沙茶羊肉炒麵、羊肉燴飯",
+                                "🥢 快炒與切盤：沙茶炒羊肉、麻油炒羊肚、白切三層羊肉盤（沾店家特製微甜豆瓣醬超絕配）",
+                                "💰 價位區間：約 $120 – $280 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=夏記羊肉+土城"
+                        },
+                        {
+                            id: "tc_m3",
+                            name: "柑橘Shinn-小柑橘 新北土城店",
+                            hours: "11:30–20:30 下午不休息",
+                            tag: "超紅柑橘系拉麵",
+                            desc: "木質調文青空間，主打清爽帶果香的柑橘雞白湯／魚介拉麵！",
+                            parking: "這個好像在我空瑜那邊",
+                            menuHighlights: [
+                                "🍊 招牌拉麵必點：雞白湯柑橘蛤蜊拉麵 ($290)、柑橘鹽味魚介清湯拉麵 ($260)、濃郁泡系雞白湯",
+                                "🍜 乾拌麵選擇：如果不愛喝湯，也有「柑橘油拌麵」與「辣味肉醬乾拉麵」",
+                                "🍚 副食與加點：叉燒飯、鮮嫩舒肥豚／雞叉燒、半熟溏心蛋",
+                                "💡 ：隨餐附有沙漏提醒拍照時間（拍完照可以把柑橘片拿起來才不會變苦！）",
+                                "💰 價位區間：約 $240 – $350 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=柑橘Shinn+小柑橘+新北土城店"
+                        },
+                        {
+                            id: "tc_m4",
+                            name: "巷口米粉湯",
+                            hours: "週五 08:30–14:30",
+                            tag: "古早味台式正餐",
+                            desc: "中央路二段巷弄裡的古早味，黑白切小菜好像很不錯。",
+                            parking: "巷弄可能小難停車。",
+                            menuHighlights: [
+                                "🍜 古早味主食：招牌大骨熬製米粉湯（粗米粉吸飽湯汁超香）、古早味滷肉飯、乾意麵",
+                                "🥩 黑白切必點：軟嫩嘴邊肉、肝連肉、滷大腸頭、骨仔肉、現炸紅燒肉",
+                                "🥬 經典小菜：吸滿大骨高湯的「油豆腐（必點！）」、滷蘿蔔、燙青菜",
+                                "💰 價位區間：約 $80 – $160 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=土城+中央路二段+巷口米粉湯"
+                        }
+                    ]
+                },
+                taoyuan: {
+                    name: "桃園・大溪／龍潭",
+                    subtitle: "國道三號交流道順路下來吃，好停車！只是沒有太認真研究",
+                    brunch: [
+                        {
+                            id: "ty_b1",
+                            name: "大溪湖畔咖啡",
+                            hours: "09:00–18:00",
+                            tag: "石門水庫湖景第一排",
+                            desc: "坐擁水庫湖景第一排，喝咖啡配早午餐，風景超 chill。",
+                            parking: "附設免費停車場，直接開進去停即可。",
+                            menuHighlights: [
+                                "🥐 早午餐與輕食：湖畔美式早午餐拼盤、鮮蔬總匯三明治、蜂蜜冰淇淋鬆餅",
+                                "🍝 飽足感正餐：義式紅酒燉牛肉飯、青醬海鮮義大利麵、焗烤千層麵套餐",
+                                "☕ 必點招牌飲品：「二奶咖啡」（雙層濃郁奶香招牌必點）、新鮮水果茶、現打抹茶冰沙",
+                                "🌊 景觀亮點：戶外與靠窗座位直接俯瞰石門水庫山水美景，度假氛圍直接拉滿",
+                                "💰 價位區間：約 $250 – $480 / 人（附設免費停車場）"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=大溪湖畔咖啡"
+                        },
+                        {
+                            id: "ty_b2",
+                            name: "丑咖啡 BU-SU CAFE（大溪）",
+                            hours: "10:00–18:00",
+                            tag: "文青庭院咖啡館",
+                            desc: "寵物友善的文青庭院咖啡館，早午餐拼盤跟早安帕尼尼評價極高。",
+                            parking: "正對面就是大溪橋頭停車場，車位超多。",
+                            menuHighlights: [
+                                "🥪 招牌早午餐：泰式打拋豬熱壓帕尼尼、舒肥嫩雞胸早午餐大拼盤、法式楓糖歐姆蛋吐司",
+                                "🍛 飯食與正餐：日式唐揚雞咖哩飯、紅酒燉牛肉飯（中午時段也吃得飽！）",
+                                "🍰 手作甜點與飲品：炙燒黑糖拿鐵、西西里檸檬氣泡咖啡、手作巴斯克乳酪蛋糕、焦糖布丁",
+                                "🌿 環境亮點：大溪老街外圍，正對面就是超大的橋頭停車場，完全不用塞進老街找車位",
+                                "💰 價位區間：約 $220 – $380 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=丑咖啡+BU-SU+CAFE+大溪"
+                        },
+                        {
+                            id: "ty_b3",
+                            name: "旅人咖啡館（龍潭店）＋ 澎湃豆花",
+                            hours: "09:30–21:00",
+                            tag: "純白老宅＋清水模豆花",
+                            desc: "龍潭交流道下來 5 分鐘，純白老宅質感早午餐與義大利麵，吃完還能走去隔壁吃澎湃豆花嫩仙草！",
+                            parking: "隔壁有特約收費停車場，走路 1 分鐘。",
+                            menuHighlights: [
+                                "🍳 旅人招牌早午餐：旅人經典皇后早午餐、煙燻鮭魚班尼迪克蛋、法式吐司早午餐拼盤",
+                                "🍝 義大利麵＆燉飯：松露野菇嫩雞燉飯、明太子鮮蝦義大利麵、現烤舒芙蕾鬆餅",
+                                "🍨 隔壁走路1分鐘「澎湃豆花」：清水模文青裝潢，必點綜合嫩仙草／傳統豆花（內用黑糖冰沙與豆花可免費續加！）",
+                                "🚗 動線優勢：龍潭交流道下來 5 分鐘就到，一次蒐集純白老宅餐廳＋人氣甜點店",
+                                "💰 價位區間：旅人約 $260–$420 / 澎湃豆花約 $65–$80"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=旅人咖啡館+龍潭店"
+                        }
+                    ],
+                    meal: [
+                        {
+                            id: "ty_m1",
+                            name: "拉麵一澍（龍潭中正店）",
+                            hours: "週五 11:00–21:30 下午不休息",
+                            tag: "4.8星木質文青拉麵",
+                            desc: "龍潭交流道下來馬上到！主打濃郁不膩的雞白湯與豚骨拉麵、炙燒叉燒飯，下午不休息幾點出門都吃得到。",
+                            parking: "中正路沿線有路邊車格，或停斜對面「龍潭運動公園周邊收費停車場」步行約 3 分鐘。",
+                            menuHighlights: [
+                                "🍜 招牌必點拉麵：濃厚雞白湯拉麵 ($230起)、黑蒜豚骨拉麵、辛口赤丸豚骨拉麵、松露雞白湯",
+                                "🔥 超人氣副食：炙燒明太子叉燒飯（香氣逼人必點！）、酥脆日式唐揚炸雞、黃金溏心蛋",
+                                "✨ 貼心加分服務：內用支援「免費加麵一次」，下午完全不休息，幾點經過都能吃！",
+                                "💰 價位區間：約 $230 – $320 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=拉麵一澍+龍潭中正店"
+                        },
+                        {
+                            id: "ty_m2",
+                            name: "野倉咖哩 Piknik Curry（龍潭）",
+                            hours: "週五 11:00–14:00",
+                            tag: "文青風熟成咖哩",
+                            desc: "主打濃郁熟成咖哩配酥脆唐揚雞、厚切炸豬排與炙燒起司，吃完散步 2 分鐘就是「澎湃豆花」。",
+                            parking: "店面周邊白線好停，或停鄰近收費停車場。",
+                            menuHighlights: [
+                                "🍛 招牌熟成咖哩：厚切炸豬排咖哩飯、酥脆多汁唐揚雞咖哩、慢燉牛肋條咖哩",
+                                "🧀 邪惡升級配料：推薦必加「炙燒焦香起司片」與「滑嫩歐姆蛋」，濃郁度加倍！",
+                                "🍤 單點炸物小食：手工日式可樂餅、黃金炸蝦、清爽胡麻時蔬",
+                                "🍨 順路甜點彩蛋：吃完散步 2 分鐘就是龍潭超紅的「澎湃豆花」，鹹甜一次滿足",
+                                "💰 價位區間：約 $190 – $290 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=野倉咖哩+龍潭"
+                        },
+                        {
+                            id: "ty_m3",
+                            name: "辛梅阿嬤的味道（平鎮／近龍潭）",
+                            hours: "週五 11:30–14:00",
+                            tag: "復古工業風台式麵店",
+                            desc: "把傳統小吃升級成文青料理！必點「實實在在一碗湯麵」、熔岩溫泉蛋乾麵與舒肥鴨肉／文昌雞切盤。",
+                            parking: "正對面就有「大型收費停車場」，過個馬路就到，超好停！",
+                            menuHighlights: [
+                                "🍜 必點招牌主食：熔岩溫泉蛋乾麵 ($75，半熟蛋戳破拌麵超銷魂)、實實在在一碗湯麵、月見蝦滷飯",
+                                "🦆 靈魂雙拼切盤：鮮嫩文昌雞切盤、櫻桃舒肥鴨肉切盤（肉質超嫩還附特製沾醬）、椒麻口水雞",
+                                "🍮 復古甜點與飲品：古早味手工焦糖布丁、復古彈珠汽水",
+                                "🅿️ 停車滿分優勢：店面正對面就是超大型收費停車場，過個馬路就到，完全免找車位！",
+                                "💰 價位區間：約 $150 – $280 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=辛梅阿嬤的味道+平鎮"
+                        }
+                    ]
+                },
+                hsinchu: {
+                    name: "新竹・市區／竹北",
+                    subtitle: "直接開到新竹吃！",
+                    brunch: [
+                        {
+                            id: "hc_b1",
+                            name: "微生 Float Dept.",
+                            hours: "09:00–17:00",
+                            tag: "日式老宅飯糰早午餐",
+                            desc: "日式老宅文青風，主打日式飯糰早午餐與酥脆煎餃、烘蛋蛋餅。",
+                            parking: "巷弄對面即有「民權路收費停車場」，或停「巨城購物中心」步行 5 分鐘。",
+                            vbHint: "🏐 順路排球店：吃完開去「捷豹體育」或「日新體育」只要 6 分鐘！",
+                            vbKey: "jaguar",
+                            menuHighlights: [
+                                "🍙 招牌必點：微生飯糰套餐（藜麥米雙口味飯糰＋多汁唐揚雞＋日式玉子燒＋季節小菜與例湯）",
+                                "🥟 人氣單點主食：冰花脆皮煎餃、厚切烘蛋形式蛋餅、特製咖哩飯（11:30後供應）",
+                                "🍰 手作甜點＆咖啡：季節水果戚風蛋糕、手沖咖啡、焙茶拿鐵",
+                                "🏠 老宅氛圍：巨城旁靜謐巷弄內的雙層日式老屋，光影跟木質裝潢非常有質感",
+                                "💰 價位區間：約 $240 – $360 / 人（對面就有平面停車場超方便）"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=微生+Float+Dept+新竹"
+                        },
+                        {
+                            id: "hc_b2",
+                            name: "李克承博士故居 a-moom",
+                            hours: "09:00–17:00",
+                            tag: "市定古蹟日式建築",
+                            desc: "日式木造古蹟庭院，主打微熱生吐司、水果三明治與手沖咖啡（⚠️ 入內需穿襪子）。",
+                            parking: "旁邊就有「勝利路Times收費停車場」或停「大遠百明志書院立體停車場」走 3 分鐘。",
+                            vbHint: "🏐 順路排球店：離「捷豹體育（北大路二館）」超近，車程不到 4 分鐘！",
+                            vbKey: "jaguar",
+                            menuHighlights: [
+                                "🍞 招牌生吐司：微熱山形生吐司套餐（外酥內軟，附多款自製果醬與法國奶油）、季節鮮果三明治",
+                                "🥗 鹹食早午餐：松露野菇法式鹹派拼盤、烤時蔬溫沙拉佐生吐司、胡麻豆腐沙拉",
+                                "☕ 飲品與甜點：手沖單品咖啡、靜岡抹茶牛奶、台灣紅玉紅茶、巴斯克乳酪蛋糕",
+                                "⚠️ 入內貼心提醒：由於是市定日式木造古蹟，入內參觀與用餐「必須穿著襪子」喔！",
+                                "💰 價位區間：約 $220 – $380 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=李克承博士故居+新竹"
+                        },
+                        {
+                            id: "hc_b3",
+                            name: "喬桌子廚房 TABLE JOE（巨城店）",
+                            hours: "09:00–21:00",
+                            tag: "大份量美式早午餐",
+                            desc: "隆恩圳綠園道旁，大份量美式早午餐、漢堡排與班尼迪克蛋，全天候供餐。",
+                            parking: "直接停「巨城購物中心停車場」或「三民公園路邊停車格」，走過來2 分鐘。",
+                            vbKey: "jaguar",
+                            menuHighlights: [
+                                "🍔 經典美式早午餐：手打純牛肉漢堡排早午餐、挪威煙燻鮭魚班尼迪克蛋、德州香料雞腿大拼盤",
+                                "🍝 豐富正餐選擇：明太子海鮮義大利麵、墨西哥起司烤餅、美式水牛城辣雞翅",
+                                "🥤 套餐升級：早午餐皆附今日飲品（可續杯紅茶/美式咖啡）與黃金脆薯或季節沙拉",
+                                "✨ 便利優勢：就在巨城商場與隆恩圳綠園道旁，停車走路 2 分鐘就到",
+                                "💰 價位區間：約 $280 – $450 / 人（美式大份量，絕對吃得超飽！）"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=喬桌子廚房+巨城店"
+                        }
+                    ],
+                    meal: [
+                        {
+                            id: "hc_m1",
+                            name: "硬派主廚的軟嫩牛排（東門／關新店）",
+                            hours: "11:30–14:00",
+                            tag: "文青復古舒肥牛排丼",
+                            desc: "牛排丼飯很有名！舒肥牛排軟嫩多汁配半熟蛋跟熱湯。",
+                            parking: "關新店對面有「新莊車站前立體停車場」；東門店可停「新竹市政府前停車場」。",
+                            vbKey: "jaguar",
+                            menuHighlights: [
+                                "🥩 必點招牌牛排丼：硬派主廚的軟嫩牛排飯 ($290)、心頭軟嫩炙燒煙燻牛排 ($350)、手切牛排滷肉飯",
+                                "🍖 不吃牛：紅酒醬燒雞腿搭手切滷肉飯、蔥醬軟嫩雞腿飯",
+                                "🍮 隱藏版甜點：主廚特製「沒什麼話題拉米蘇（提拉米蘇）」、熱情焦糖布丁（評價超高！）",
+                                "🍲 隨餐附贈：每份主餐皆附半熟溫泉蛋（或全熟蛋）、季節時蔬與免費續碗的清甜牛肉清湯",
+                                "💰 價位區間：約 $260 – $390 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=硬派主廚的軟嫩牛排+新竹"
+                        },
+                        {
+                            id: "hc_m2",
+                            name: "朝寢坊の咖哩 新竹店",
+                            hours: "中午 11:30–14:30",
+                            tag: "日系溫馨熟成咖哩",
+                            desc: "南門街上的日系溫馨小店，主打濃郁熟成日式咖哩飯配超嫩炸豬排、唐揚雞與歐姆蛋。",
+                            parking: "旁邊走 2 分鐘就是「明志書院立體停車場（新竹大遠百旁）」，好停！",
+                            vbHint: "🏐 順路排球店：離「捷豹體育（北大路二館）」開車只要 4 分鐘！",
+                            vbKey: "jaguar",
+                            menuHighlights: [
+                                "🍛 招牌熟成咖哩：厚切炸豬排歐姆蛋咖哩、日式多汁唐揚炸雞咖哩、炸海老蝦咖哩",
+                                "🧀 升級推薦必加：加點滑嫩裙擺歐姆蛋 (+$40)、炙燒起司、手工日式可樂餅",
+                                "✨ 咖哩風味亮點：蔬果熬煮的日式甘口熟成咖哩，濃郁順口，隨餐還附小杯飲品或湯品",
+                                "🅿️ 動線超順：停大遠百旁的明志書院停車場走過來只要 2 分鐘，吃完開去捷豹體育也只要 4 分鐘！",
+                                "💰 價位區間：約 $180 – $280 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=朝寢坊の咖哩+新竹店"
+                        },
+                        {
+                            id: "hc_m3",
+                            name: "邱家鴨肉麵",
+                            hours: "⚠️ 僅營業 09:30–12:00",
+                            tag: "煙燻鴨肉在地老店",
+                            desc: "中央路人氣老店，煙燻鴨肉香氣十足，必點鴨肉炒麵跟鴨肉湯（需 10:00 出發才吃得到喔！）。",
+                            parking: "可停「新竹市政府周邊停車場」或「東門市場／稅務局周邊車格」步行約 4 分鐘。",
+                            note: "⚠️ 營業時間只到中午 12:00，若晚出門建議選別家！",
+                            vbKey: "jaguar",
+                            menuHighlights: [
+                                "🍜 在地老饕必點：大火快炒鍋氣十足的「鴨肉炒麵」、清甜甘醇「煙燻鴨肉湯麵」、鴨肉炒米粉",
+                                "🦆 招牌切盤與小菜：煙燻鴨肉切盤（鴨皮金黃油亮、肉質軟嫩帶煙燻香）、薑絲炒鴨血、脆口鴨腸湯",
+                                "⚠️ 時間特別提醒：這家只營業早上 09:30 到中午 12:00（賣完提早收），一定要 10:00 出發才吃得到喔！",
+                                "💰 價位區間：約 $80 – $200 / 人"
+                            ],
+                            menuUrl: "https://www.google.com/maps/search/?api=1&query=邱家鴨肉麵+新竹市中央路"
+                        }
+                    ]
+                }
+            },
+            activities: [
+                {
+                    id: "act_glass",
+                    title: "吹玻璃體驗",
+                    place: "春室 The POOL（新竹公園旁）",
+                    icon: "🔥",
+                    desc: "體驗吹玻璃 DIY ＋ 三樓純白透明咖啡廳喝飲料吃池塘鬆餅。",
+                    parking: "新竹公園地下停車場（就在春室正下方，停好搭電梯上來就到）。",
+                    vbHint: "走路/開車 3 分鐘就是「日新體育用品」，開 4 分鐘就到清大對面「億鴻體育」！",
+                    vbKey: "rixin"
+                },
+                {
+                    id: "act_zoo",
+                    title: "逛動物園",
+                    place: "新竹市立動物園",
+                    icon: "🦛",
+                    desc: "看看動物但我不知道會不會很熱。",
+                    parking: "新竹公園地下停車場（與春室共用同一個停車場）。",
+                    vbHint: "就在「日新體育用品」跟「億鴻體育」旁邊，逛完動物順路晃過去只要 3 分鐘！",
+                    vbKey: "rixin"
+                },
+                {
+                    id: "act_spots",
+                    title: "各種順路景點晃晃",
+                    place: "往新豐小叮噹順路三選一",
+                    icon: "🌊",
+                    desc: "點選後可再挑一個順路去小叮噹的風景點！",
+                    parking: "各景點皆附設停車場或好停白線。",
+                    hasSubSpots: true,
+                    vbKey: "yihong",
+                    subSpots: [
+                        {
+                            id: "spot_beach",
+                            name: "新月沙灣（竹北）",
+                            desc: "看海踏浪吹海風，開去小叮噹只要 10 分鐘！",
+                            parking: "附設免費停車場"
+                        },
+                        {
+                            id: "spot_book",
+                            name: "或者書店 Or Book Store（竹北新瓦屋）",
+                            desc: "客家文化保存區裡的獨立書店＋咖啡廳。",
+                            parking: "新瓦屋附設停車場"
+                        },
+                        {
+                            id: "spot_tofu",
+                            name: "豆腐岩（竹北頭前溪）",
+                            desc: "熱門打卡點，踩在方塊石頭上看溪景吹風拍照。",
+                            parking: "路邊白線好停車"
+                        }
+                    ]
+                },
+                {
+                    id: "act_movie",
+                    title: "看場電影",
+                    place: "巨城威秀 / 竹北百老匯影城",
+                    icon: "🎬",
+                    desc: "兩小時的時光屋。",
+                    parking: "直接停巨城購物中心或竹北享平方停車場。",
+                    requireEarly: true,
+                    vbKey: "jaguar"
+                },
+                {
+                    id: "act_ice",
+                    title: "下午茶",
+                    place: "東門冰室 1059（或 暗室微光／墨咖啡）",
+                    icon: "🍧",
+                    desc: "日系木質文青風刨冰專門店！主打鵝絨般綿密的浮誇水果刨冰與靜岡抹茶（內用有免費熱麥茶）。若想喝咖啡也可改去附近的「暗室微光」或「墨咖啡」但你會睡不著就不要！",
+                    parking: "可停「新竹市政府前停車場」或「稅務局地下停車場」，走過來約 3～4 分鐘。",
+                    vbHint: "離「捷豹體育（北大路二館）」開車只要 3 分鐘（走路 8 分鐘），吃完冰順路逛排球裝備超順！",
+                    vbKey: "jaguar"
+                }
+            ],
+            volleyballStores: {
+                jaguar: {
+                    id: "vb_jaguar",
+                    badge: "近東門冰室1059／李克承／朝寢坊咖哩",
+                    name: "捷豹體育（北大路門市／二館羽排球專門）",
+                    address: "新竹市北區北大路339～341號",
+                    desc: "在新竹有三個館，其中「二館」專門賣排球、羽球裝備（Mizuno、Asics 排球鞋、護膝、排球褲有齊全）！從市區冰室或餐廳開過去只要 3～4 分鐘。",
+                    parking: "北大路路邊停車格，或對面「北門街／民富立體停車場」。"
+                },
+                rixin: {
+                    id: "vb_rixin",
+                    badge: "近春室吹玻璃／新竹動物園",
+                    name: "日新體育用品",
+                    address: "新竹市東區光復路二段529號（近新竹公園）",
+                    desc: "老字號排球與團體運動用品店（週五 10:00–21:00）。就在春室與新竹動物園旁邊走路／開車 3 分鐘的地方，連停車場都不用重找！",
+                    parking: "直接停「新竹公園地下停車場」走過去，或停光復路車格。"
+                },
+                yihong: {
+                    id: "vb_yihong",
+                    badge: "近交流道／清大商圈",
+                    name: "億鴻體育用品社（清大店）",
+                    address: "新竹市東區光復路二段416號（清華大學正對面）",
+                    desc: "在地 40 年老字號但裝潢非常明亮現代，排球鞋跟運動機能服飾款式很多（週五 11:00–21:30）。從新竹交流道或新竹公園開過去都只要 4 分鐘！",
+                    parking: "直接停對面「清華大學附設停車場」或「赤土崎地下停車場」。"
+                }
+            },
+            dinners: [
+                {
+                    id: "din_hotpot",
+                    category: "火鍋類（新竹／竹北）",
+                    icon: "🍲",
+                    subtitle: "剛從零下冰庫出來，急需熱湯解凍靈魂！開得晚又好停車",
+                    items: [
+                        {
+                            name: "海底撈（新竹大遠百店）",
+                            hours: "營業至 凌晨 03:00",
+                            desc: "服務滿分、湯頭選擇多，半夜完全不用排隊！",
+                            parking: "直接停新竹大遠百停車場"
+                        },
+                        {
+                            name: "這一鍋（竹北光明殿）",
+                            hours: "營業至 晚上 23:00",
+                            desc: "老火湯與麻辣鍋超暖胃，空間寬敞舒服。",
+                            parking: "旁邊就有大型收費停車場"
+                        }
+                    ]
+                },
+                {
+                    id: "din_izakaya",
+                    category: "居酒屋串燒（竹北）",
+                    icon: "🍢",
+                    subtitle: "滑完雪熱量已經歸零，吃炭火串燒配熱關東煮超療癒",
+                    items: [
+                        {
+                            name: "旅人關東煮串燒酒場",
+                            hours: "週五營業至 23:00（或 23:30）",
+                            desc: "竹北市復興三路一段82號。深夜文青風關東煮配炭火串燒，必點剝皮辣椒肉串、熱湯關東煮，20:30 從小叮噹開過去約 20 分鐘剛好趕上！",
+                            parking: "復興三路周邊白線／停車格，或對面公園周邊車位"
+                        }
+                    ]
+                },
+                {
+                    id: "din_tucheng",
+                    category: "先北上回土城再說！（附營業時間）",
+                    icon: "🚗",
+                    subtitle: "20:30 從小叮噹離開上國道，回到土城約 21:30～21:40，這三家全部都還開著！",
+                    items: [
+                        {
+                            name: "上贊麵線臭豆腐",
+                            hours: "11:30 ～ 凌晨 02:00",
+                            desc: "土城中央路一段252-1號（近海山站）。在地 20 年宵夜霸主！外酥內嫩炸臭豆腐配大腸蚵仔麵線，自製辣椒好像很不錯。"
+                        },
+                        {
+                            name: "酌炑鳥居酒屋（土城中央店／延吉店）",
+                            hours: "17:30 ～ 凌晨 01:00",
+                            desc: "土城高評價日式串燒居酒屋，氣氛好、烤功不錯。"
+                        },
+                        {
+                            name: "無冬 烏龍麵所（土城中央店）",
+                            hours: "16:00 ～ 凌晨 00:00（午夜12點）",
+                            desc: "土城中央路二段248號。開到半夜的烏龍麵專門店！如果那天太熱就pass沒關係"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function findRestaurantById(restId) {
+            for (const cityKey of Object.keys(DB.restaurants)) {
+                const city = DB.restaurants[cityKey];
+                for (const type of ['brunch', 'meal']) {
+                    const found = city[type].find(r => r.id === restId);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        function openMenuModal(restId) {
+            const rest = findRestaurantById(restId);
+            if (!rest) return;
+
+            document.getElementById('menuModalTitle').textContent = rest.name;
+            document.getElementById('menuModalTag').textContent = `${rest.tag} · 必點與價位攻略`;
+
+            renderMenuModalBody(rest);
+
+            const modal = document.getElementById('menuModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeMenuModal() {
+            const modal = document.getElementById('menuModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function renderMenuModalBody(rest) {
+            const body = document.getElementById('menuModalBody');
+            const highlightsHtml = (rest.menuHighlights || []).map(item => `
+                <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed bg-white/80 p-2.5 rounded-xl border border-sky-100/70">
+                    <span class="text-sky-500 mt-0.5 shrink-0">✦</span>
+                    <span>${item}</span>
+                </li>
+            `).join('');
+
+            body.innerHTML = `
+                <div class="bg-sky-50/70 rounded-2xl p-4 sm:p-5 border border-sky-100">
+                    <h4 class="text-xs sm:text-sm font-bold text-sky-800 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <span>🍴 招牌必點＆價位攻略</span>
+                    </h4>
+                    <ul class="space-y-2.5">
+                        ${highlightsHtml}
+                    </ul>
+                    ${rest.menuUrl ? `
+                        <div class="mt-4 pt-3.5 border-t border-sky-200/60 flex items-center justify-between flex-wrap gap-2">
+                            <span class="text-xs text-slate-500">想直接看店家位置、環境照與最新評論？</span>
+                            <a href="${rest.menuUrl}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto text-center inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 px-4 py-2.5 rounded-xl shadow-sm transition-all">
+                                <span>📍 在 Google Maps 開啟這間店 ↗</span>
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        let state = {
+            step: "STEP_0",
+            history: [],
+            planType: null,
+            departTime: null,
+            mealType: null,
+            cityKey: null,
+            restaurant: null,
+            activity: null,
+            subSpot: null,
+            wantVolleyball: null,
+            selectedVbKey: null,
+            dinner: null
+        };
+
+        const STEP_PROGRESS = {
+            "STEP_0": 10,
+            "Q1": 24,
+            "Q2": 38,
+            "Q3_CITY": 50,
+            "Q3_REST": 62,
+            "Q4": 74,
+            "Q4_SUBSPOT": 78,
+            "Q4_5": 85,
+            "SKI_TRANSITION": 91,
+            "Q5": 96,
+            "RESULT": 100
+        };
+
+        function navigateTo(nextStep) {
+            state.history.push(state.step);
+            state.step = nextStep;
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goBack() {
+            if (state.history.length > 0) {
+                state.step = state.history.pop();
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function resetApp() {
+            state = {
+                step: "STEP_0",
+                history: [],
+                planType: null,
+                departTime: null,
+                mealType: null,
+                cityKey: null,
+                restaurant: null,
+                activity: null,
+                subSpot: null,
+                wantVolleyball: null,
+                selectedVbKey: null,
+                dinner: null
+            };
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function getRecommendedVbKey() {
+            if (state.activity && state.activity.vbKey) {
+                return state.activity.vbKey;
+            }
+            if (state.restaurant && state.restaurant.vbKey) {
+                return state.restaurant.vbKey;
+            }
+            return "jaguar";
+        }
+
+        function render() {
+            const container = document.getElementById('appContainer');
+            const backBtn = document.getElementById('backBtn');
+            const resetTopBtn = document.getElementById('resetTopBtn');
+            const progressBar = document.getElementById('progressBar');
+
+            if (state.history.length > 0) {
+                backBtn.classList.remove('hidden');
+                backBtn.classList.add('inline-flex');
+                resetTopBtn.classList.remove('hidden');
+            } else {
+                backBtn.classList.add('hidden');
+                backBtn.classList.remove('inline-flex');
+                resetTopBtn.classList.add('hidden');
+            }
+
+            progressBar.style.width = (STEP_PROGRESS[state.step] || 15) + '%';
+
+            container.classList.remove('fade-enter');
+            void container.offsetWidth;
+            container.classList.add('fade-enter');
+
+            switch (state.step) {
+                case "STEP_0":
+                    renderStep0(container);
+                    break;
+                case "Q1":
+                    renderQ1(container);
+                    break;
+                case "Q2":
+                    renderQ2(container);
+                    break;
+                case "Q3_CITY":
+                    renderQ3City(container);
+                    break;
+                case "Q3_REST":
+                    renderQ3Restaurants(container);
+                    break;
+                case "Q4":
+                    renderQ4(container);
+                    break;
+                case "Q4_SUBSPOT":
+                    renderQ4SubSpots(container);
+                    break;
+                case "Q4_5":
+                    renderQ4_5(container);
+                    break;
+                case "SKI_TRANSITION":
+                    renderSkiTransition(container);
+                    break;
+                case "Q5":
+                    renderQ5(container);
+                    break;
+                case "RESULT":
+                    renderResult(container);
+                    break;
+            }
+        }
+
+        function renderStep0(el) {
+            el.innerHTML = `
+                <div class="text-center mb-7">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Step 0 · 行程主軸</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">今天想怎麼安排？</h1>
+                </div>
+
+                <div class="space-y-3.5">
+                    <button onclick="selectStep0('all')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-2xl shrink-0 border border-sky-100">🎿</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-base sm:text-lg">我全都要</span>
+                                <span class="text-xs font-semibold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full">應該不會太累的組合</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">滑雪 ＋ 其他行程</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectStep0('ski_only')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-2xl shrink-0 border border-sky-100">❄️</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-base sm:text-lg">純滑雪</span>
+                                <span class="text-xs font-medium text-slate-400">保留體力</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">睡飽吃好，直接去滑雪</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectStep0('no_ski')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-2xl shrink-0 border border-sky-100">☕</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-base sm:text-lg">沒滑雪，只有其他行程</span>
+                                <span class="text-xs font-medium text-slate-400">輕鬆散步</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">純晃晃</p>
+                        </div>
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectStep0(type) {
+            state.planType = type;
+            navigateTo("Q1");
+        }
+
+        function renderQ1(el) {
+            const isSkiOnly = state.planType === 'ski_only';
+            el.innerHTML = `
+                <div class="mb-6">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q1 · 出發時間</span>
+                    <h2 class="text-2xl font-bold text-slate-800">滿分男想要幾點出門～？</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                        ${state.planType !== 'no_ski' ? '預計 16:30 抵達新豐小叮噹滑雪場（提早一小時報到）' : '今天沒有滑雪時間壓力，幾點出門都可以！'}
+                    </p>
+                </div>
+
+                <div class="space-y-3.5">
+                    <button onclick="selectQ1('10:00 前後')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 flex items-center justify-center text-xl shrink-0">☀️</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between flex-wrap gap-1">
+                                <span class="font-bold text-slate-800 text-base">10:00 前後</span>
+                                <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">我們是時間富翁</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">時間超充裕！</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectQ1('11:30 - 12:30')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 flex items-center justify-center text-xl shrink-0">😎</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between flex-wrap gap-1">
+                                <span class="font-bold text-slate-800 text-base">11:30 - 12:30</span>
+                                <span class="text-xs font-medium text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full">從容不迫</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">睡飽再出門！吃完剛好接一個小行程</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectQ1('13:00 以後')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 flex items-center justify-center text-xl shrink-0">🛌</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between flex-wrap gap-1">
+                                <span class="font-bold text-slate-800 text-base">13:00 以後</span>
+                                ${isSkiOnly ? '<span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">✨ 純滑雪最推時段</span>' : '<span class="text-xs font-medium text-slate-400">睡到自然醒</span>'}
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">吃飽後準備出發去新竹</p>
+                        </div>
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectQ1(timeStr) {
+            state.departTime = timeStr;
+            navigateTo("Q2");
+        }
+
+        function renderQ2(el) {
+            el.innerHTML = `
+                <div class="mb-6">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q2 · 餐點風格</span>
+                    <h2 class="text-2xl font-bold text-slate-800">那我們去吃早午餐？要嗎要嗎~</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="selectQ2('brunch')" class="option-btn p-6 rounded-2xl text-left flex flex-col justify-between h-full">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-2xl mb-4 border border-sky-100">🥐</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">好，開始選擇！</h3>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">看看質感早午餐</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectQ2('meal')" class="option-btn p-6 rounded-2xl text-left flex flex-col justify-between h-full">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-2xl mb-4 border border-sky-100">🍜</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">不要，我要吃正餐！</h3>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">直接來點澱粉跟肉</p>
+                        </div>
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectQ2(mealType) {
+            state.mealType = mealType;
+            navigateTo("Q3_CITY");
+        }
+
+        function renderQ3City(el) {
+            el.innerHTML = `
+                <div class="mb-6">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q3 · 用餐地點</span>
+                    <h2 class="text-2xl font-bold text-slate-800">那要去哪裡吃？</h2>
+                </div>
+
+                <div class="space-y-3.5">
+                    <button onclick="selectCity('tucheng')" class="option-btn w-full text-left p-5 rounded-2xl flex items-center justify-between gap-4">
+                        <div class="flex items-start gap-3.5">
+                            <span class="text-2xl mt-0.5">📍</span>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">新北（土城周邊）</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">吃飽再上</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold text-sky-600 bg-sky-50 px-3 py-1 rounded-full shrink-0">
+                            ${DB.restaurants.tucheng[state.mealType].length} 家可選 ➔
+                        </span>
+                    </button>
+
+                    <button onclick="selectCity('taoyuan')" class="option-btn w-full text-left p-5 rounded-2xl flex items-center justify-between gap-4">
+                        <div class="flex items-start gap-3.5">
+                            <span class="text-2xl mt-0.5">🚗</span>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">桃園（大溪／龍潭交流道）</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">國三順路下來 5 分鐘，應該好停車！但我沒有認真研究這邊的美食😖</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold text-sky-600 bg-sky-50 px-3 py-1 rounded-full shrink-0">
+                            ${DB.restaurants.taoyuan[state.mealType].length} 家可選 ➔
+                        </span>
+                    </button>
+
+                    <button onclick="selectCity('hsinchu')" class="option-btn w-full text-left p-5 rounded-2xl flex items-center justify-between gap-4">
+                        <div class="flex items-start gap-3.5">
+                            <span class="text-2xl mt-0.5">🌿</span>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">新竹（市區／竹北）</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">直接到新竹再說！</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold text-sky-600 bg-sky-50 px-3 py-1 rounded-full shrink-0">
+                            ${DB.restaurants.hsinchu[state.mealType].length} 家可選 ➔
+                        </span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectCity(cityKey) {
+            state.cityKey = cityKey;
+            navigateTo("Q3_REST");
+        }
+
+        function renderQ3Restaurants(el) {
+            const cityData = DB.restaurants[state.cityKey];
+            const list = cityData[state.mealType];
+            const typeLabel = state.mealType === 'brunch' ? '早午餐' : '正餐';
+
+            const cardsHtml = list.map(r => {
+                const isLateForDuck = (r.id === 'hc_m3' && state.departTime !== '10:00 前後');
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 border border-sky-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">${r.tag}</span>
+                                <span class="text-xs text-slate-400">🕒 ${r.hours}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-1.5">${r.name}</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">${r.desc}</p>
+                            
+                            <div class="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 space-y-1.5 border border-slate-100">
+                                <div class="flex items-start gap-1.5">
+                                    <span class="shrink-0">🅿️</span>
+                                    <span><strong>停車：</strong>${r.parking}</span>
+                                </div>
+                                ${r.note ? `<div class="text-amber-700 bg-amber-50/80 px-2.5 py-1.5 rounded-lg mt-1">${r.note}</div>` : ''}
+                                ${r.vbHint ? `<div class="text-sky-700 bg-sky-50/80 px-2.5 py-1.5 rounded-lg mt-1 font-medium">${r.vbHint}</div>` : ''}
+                                ${isLateForDuck ? `<div class="text-rose-600 bg-rose-50 px-2.5 py-1.5 rounded-lg mt-1 font-semibold">⚠️ 你目前選「${state.departTime}」出發，這家 12:00 就收攤可能會撲空喔！</div>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-col sm:flex-row gap-2.5">
+                            <button onclick="openMenuModal('${r.id}')" class="sm:w-5/12 py-2.5 px-3.5 rounded-xl bg-sky-50 hover:bg-sky-100/90 text-sky-700 border border-sky-200/80 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5">
+                                <span>📖 看菜單／必點</span>
+                            </button>
+                            <button onclick="selectRestaurant('${r.id}')" class="flex-1 py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-[0.99] text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-1.5">
+                                <span>就決定吃這家！</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            el.innerHTML = `
+                <div class="mb-5">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">${cityData.name} · ${typeLabel}小卡</span>
+                    <h2 class="text-2xl font-bold text-slate-800">挑一家最有興趣的吧！沒有再跟我說 我改進</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">${cityData.subtitle}</p>
+                </div>
+
+                <div class="space-y-4 max-h-[62vh] overflow-y-auto pr-1">
+                    ${cardsHtml}
+                </div>
+            `;
+        }
+
+        function selectRestaurant(restId) {
+            const list = DB.restaurants[state.cityKey][state.mealType];
+            state.restaurant = list.find(r => r.id === restId);
+
+            if (state.planType === 'ski_only') {
+                state.activity = null;
+                state.subSpot = null;
+                navigateTo("Q4_5");
+            } else {
+                navigateTo("Q4");
+            }
+        }
+
+        function renderQ4(el) {
+            const isMovieLocked = (state.planType !== 'no_ski') && (state.departTime !== '10:00 前後');
+            const showIceRecommend = (state.cityKey === 'tucheng' || state.cityKey === 'taoyuan' || state.departTime === '10:00 前後');
+
+            const itemsHtml = DB.activities.map((act, idx) => {
+                if (act.id === 'act_movie' && isMovieLocked) {
+                    return `
+                        <div class="w-full text-left p-4 rounded-2xl border border-slate-200 bg-slate-100/80 opacity-65 cursor-not-allowed select-none">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-11 h-11 rounded-xl bg-slate-200 flex items-center justify-center text-xl shrink-0 grayscale">🎬</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between flex-wrap gap-1">
+                                        <span class="font-bold text-slate-500 text-base line-through">選項 ${idx + 1}：${act.title}（${act.place}）</span>
+                                        <span class="text-xs font-semibold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">🔒 已鎖定</span>
+                                    </div>
+                                    <p class="text-xs text-rose-600 font-medium mt-1.5">⚠️ 太晚出門囉，看電影會趕不上 16:30 到小叮噹！</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const isIceSpot = act.id === 'act_ice';
+                return `
+                    <button onclick="selectQ4('${act.id}')" class="option-btn w-full text-left p-4 sm:p-5 rounded-2xl flex items-start gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 flex items-center justify-center text-xl shrink-0 border border-sky-100">${act.icon}</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between flex-wrap gap-1">
+                                <span class="font-bold text-slate-800 text-base">${act.title} <span class="text-xs font-normal text-slate-500">｜${act.place}</span></span>
+                                ${isIceSpot && showIceRecommend ? `<span class="text-xs font-semibold text-sky-700 bg-sky-100/90 px-2.5 py-0.5 rounded-full">✨ 路線激推！開到新竹剛好來下午茶</span>` : ''}
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${act.desc}</p>
+                            <div class="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                                <span class="bg-slate-50 px-2 py-0.5 rounded border border-slate-100">🅿️ ${act.parking}</span>
+                            </div>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+
+            el.innerHTML = `
+                <div class="mb-5">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q4 · 下午體驗（五選一）</span>
+                    <h2 class="text-2xl font-bold text-slate-800">${state.planType === 'no_ski' ? '吃完飯後，下午要去哪裡晃晃？' : '去滑雪場前，要去哪裡晃晃嗎？'}</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">挑一個最想去的！</p>
+                </div>
+
+                <div class="space-y-3 max-h-[62vh] overflow-y-auto pr-1">
+                    ${itemsHtml}
+                </div>
+            `;
+        }
+
+        function selectQ4(actId) {
+            const act = DB.activities.find(a => a.id === actId);
+            state.activity = act;
+            if (act.hasSubSpots) {
+                navigateTo("Q4_SUBSPOT");
+            } else {
+                state.subSpot = null;
+                navigateTo("Q4_5");
+            }
+        }
+
+        function renderQ4SubSpots(el) {
+            const subSpots = state.activity.subSpots;
+            const html = subSpots.map(sp => `
+                <button onclick="selectSubSpot('${sp.id}')" class="option-btn w-full text-left p-5 rounded-2xl flex items-start justify-between gap-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">${sp.name}</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-1">${sp.desc}</p>
+                        <span class="inline-block mt-2 text-xs text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-md">🅿️ ${sp.parking}</span>
+                    </div>
+                    <span class="text-sky-600 font-bold text-sm shrink-0 self-center">選這個 ➔</span>
+                </button>
+            `).join('');
+
+            el.innerHTML = `
+                <div class="mb-5">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q4 · 順路景點挑選</span>
+                    <h2 class="text-2xl font-bold text-slate-800">想去哪個順路景點走走？</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">這三個點都在往新豐小叮噹的順路上，好停車又不繞路！</p>
+                </div>
+                <div class="space-y-3.5">
+                    ${html}
+                </div>
+            `;
+        }
+
+        function selectSubSpot(spotId) {
+            state.subSpot = state.activity.subSpots.find(s => s.id === spotId);
+            navigateTo("Q4_5");
+        }
+
+        function renderQ4_5(el) {
+            const recKey = getRecommendedVbKey();
+            if (!state.selectedVbKey) {
+                state.selectedVbKey = recKey;
+            }
+
+            const allStoresHtml = Object.entries(DB.volleyballStores).map(([key, st]) => {
+                const isRec = key === recKey;
+                const isSelected = state.selectedVbKey === key;
+                return `
+                    <div onclick="changeVbStore('${key}')" class="cursor-pointer p-3.5 rounded-xl border transition-all ${isSelected ? 'border-sky-500 bg-sky-50/70 shadow-sm' : 'border-slate-200 bg-white hover:border-sky-300'}">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-sky-100 text-sky-800">${st.badge}</span>
+                            ${isRec ? '<span class="text-[11px] font-bold text-emerald-600">🎯 離你剛剛選的行程最近！</span>' : ''}
+                        </div>
+                        <div class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                            <input type="radio" name="vbStore" ${isSelected ? 'checked' : ''} class="accent-sky-600" />
+                            <span>${st.name}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">${st.desc}</p>
+                        <p class="text-[11px] text-slate-500 mt-1">📍 ${st.address} ｜ 🅿️ ${st.parking}</p>
+                    </div>
+                `;
+            }).join('');
+
+            el.innerHTML = `
+                <div class="mb-5">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q4.5 · 可能會順路 🏐</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-800 leading-snug">對了！如果有點時間，要不要順路去新竹的排球用品店晃晃？</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5">系統已根據你剛剛選的路線，自動標出最順路的一家（逛 15～30 分鐘剛剛好）！</p>
+                </div>
+
+                <div class="mb-5 space-y-2.5 max-h-[38vh] overflow-y-auto pr-1">
+                    ${allStoresHtml}
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="selectQ4_5(true)" class="w-full py-3.5 px-5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm sm:text-base shadow-sm transition-all flex items-center justify-center gap-2">
+                        <span>🏐 好啊！順路去看看裝備</span>
+                    </button>
+                    <button onclick="selectQ4_5(false)" class="option-btn w-full py-3 px-5 rounded-2xl text-slate-600 font-medium text-sm text-center hover:bg-slate-50">
+                        先不用～我們直接往下一站出發！
+                    </button>
+                </div>
+            `;
+        }
+
+        function changeVbStore(key) {
+            state.selectedVbKey = key;
+            renderQ4_5(document.getElementById('appContainer'));
+        }
+
+        function selectQ4_5(want) {
+            state.wantVolleyball = want;
+            if (state.planType !== 'no_ski') {
+                navigateTo("SKI_TRANSITION");
+            } else {
+                navigateTo("Q5");
+            }
+        }
+
+        function renderSkiTransition(el) {
+            el.innerHTML = `
+                <div class="text-center py-6 sm:py-8">
+                    <div class="inline-flex items-center justify-center gap-3 px-5 py-3 rounded-3xl bg-sky-50 border border-sky-100 shadow-sm mb-5">
+                        <span class="text-3xl sm:text-4xl">🚗</span>
+                        <span class="text-sky-400 font-bold text-lg">➔ ➔ ➔</span>
+                        <span class="text-3xl sm:text-4xl">🎿</span>
+                    </div>
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold mb-2">下一站 · 16:30 報到換裝</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">結束後前往小叮噹！</h2>
+                    <p class="text-sm sm:text-base text-sky-700 font-medium mt-2.5">❄️ 希望我們學得會滑雪 ⛄️</p>
+                    <p class="text-xs text-slate-400 mt-2">17:30 – 20:30 夜間包場滑雪時光</p>
+
+                    <div class="mt-8">
+                        <button onclick="navigateTo('Q5')" class="w-full sm:w-auto min-w-[240px] py-3.5 px-8 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm sm:text-base shadow-md transition-all inline-flex items-center justify-center gap-2">
+                            <span>🚗 出發去滑雪！（選滑完雪的晚餐）➔</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderQ5(el) {
+            const isNoSki = state.planType === 'no_ski';
+            const titleText = isNoSki
+                ? "逛完差不多餓了，晚餐想吃什麼類型？"
+                : "20:30 滑完雪出來應該是已超餓，晚餐想吃什麼類型？";
+
+            const cardsHtml = DB.dinners.map((d, idx) => {
+                const subItems = d.items.map(item => `
+                    <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-100">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="font-bold text-slate-800 text-xs sm:text-sm">${item.name}</span>
+                            <span class="text-[11px] font-semibold text-sky-700 bg-sky-100/80 px-2 py-0.5 rounded">${item.hours}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">${item.desc}</p>
+                        ${item.parking ? `<p class="text-[11px] text-slate-500 mt-1">🅿️ ${item.parking}</p>` : ''}
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 border border-sky-100 shadow-sm">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-xl shrink-0 border border-sky-100">${d.icon}</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">選項 ${idx + 1}：${d.category}</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">${d.subtitle}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 mb-4">
+                            ${subItems}
+                        </div>
+                        <button onclick="selectQ5('${d.id}')" class="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-semibold text-sm transition-all">
+                            選擇「${d.category}」 ➔
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            el.innerHTML = `
+                <div class="mb-5">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-medium mb-2 border border-sky-100">Q5 · 晚餐時間</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-800">${titleText}</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">全部都是開到很晚 絕對有得吃的！</p>
+                </div>
+
+                <div class="space-y-4 max-h-[62vh] overflow-y-auto pr-1">
+                    ${cardsHtml}
+                </div>
+            `;
+        }
+
+        function selectQ5(dinnerId) {
+            state.dinner = DB.dinners.find(d => d.id === dinnerId);
+            navigateTo("RESULT");
+        }
+
+        function renderResult(el) {
+            const cityObj = DB.restaurants[state.cityKey];
+            const rest = state.restaurant;
+            const act = state.activity;
+            const subSpot = state.subSpot;
+            const vbStore = DB.volleyballStores[state.selectedVbKey || getRecommendedVbKey()];
+            const din = state.dinner;
+
+            const planBadgeMap = {
+                'all': '🎿 我全都要（滑雪＋其他行程）',
+                'ski_only': '❄️ 純滑雪（睡飽吃好，直接去滑雪）',
+                'no_ski': '☕ 沒滑雪，只有其他行程（純晃晃）'
+            };
+
+            let timelineHtml = '';
+
+            timelineHtml += `
+                <div class="relative pl-6 pb-5 border-l-2 border-sky-200">
+                    <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-sky-500 ring-4 ring-sky-50"></div>
+                    <div class="text-xs font-bold text-sky-600 uppercase tracking-wide">${state.departTime} 出發</div>
+                    <div class="font-bold text-slate-800 text-base mt-0.5">📍 新北土城醫院 集合出發</div>
+                </div>
+            `;
+
+            if (rest) {
+                timelineHtml += `
+                    <div class="relative pl-6 pb-5 border-l-2 border-sky-200">
+                        <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-sky-500 ring-4 ring-sky-50"></div>
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div class="text-xs font-bold text-sky-600">${cityObj.name} · ${state.mealType === 'brunch' ? '早午餐' : '正餐'}</div>
+                            <button onclick="openMenuModal('${rest.id}')" class="text-[11px] font-semibold text-sky-700 bg-sky-100/80 hover:bg-sky-200/70 px-2.5 py-0.5 rounded-full transition-all">
+                                📖 查看這家菜單
+                            </button>
+                        </div>
+                        <div class="font-bold text-slate-800 text-base mt-0.5">🍽️ ${rest.name}</div>
+                        <p class="text-xs text-slate-600 mt-1">${rest.desc}</p>
+                        <div class="mt-2 bg-sky-50/70 border border-sky-100 rounded-xl p-2.5 text-xs text-slate-600">
+                            <div>🅿️ <strong>停車：</strong>${rest.parking}</div>
+                            ${rest.note ? `<div class="text-amber-700 mt-1">${rest.note}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (act) {
+                const actTitle = subSpot ? `${act.title} — ${subSpot.name}` : `${act.title}（${act.place}）`;
+                const actDesc = subSpot ? subSpot.desc : act.desc;
+                const actPark = subSpot ? subSpot.parking : act.parking;
+                timelineHtml += `
+                    <div class="relative pl-6 pb-5 border-l-2 border-sky-200">
+                        <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-sky-500 ring-4 ring-sky-50"></div>
+                        <div class="text-xs font-bold text-sky-600">午後晃晃體驗</div>
+                        <div class="font-bold text-slate-800 text-base mt-0.5">${act.icon} ${actTitle}</div>
+                        <p class="text-xs text-slate-600 mt-1">${actDesc}</p>
+                        <div class="mt-2 bg-sky-50/70 border border-sky-100 rounded-xl p-2.5 text-xs text-slate-600">
+                            🅿️ <strong>停車：</strong>${actPark}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (state.wantVolleyball && vbStore) {
+                timelineHtml += `
+                    <div class="relative pl-6 pb-5 border-l-2 border-sky-200">
+                        <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-50"></div>
+                        <div class="text-xs font-bold text-emerald-600">可能會順路（約 15–30 分鐘）</div>
+                        <div class="font-bold text-slate-800 text-base mt-0.5">🏐 ${vbStore.name}</div>
+                        <p class="text-xs text-slate-600 mt-1">${vbStore.desc}</p>
+                        <div class="mt-2 bg-emerald-50/60 border border-emerald-100 rounded-xl p-2.5 text-xs text-slate-600">
+                            📍 ${vbStore.address}<br>
+                            🅿️ <strong>停車：</strong>${vbStore.parking}
+                        </div>
+                    </div>
+                `;
+            } else if (vbStore) {
+                timelineHtml += `
+                    <div class="relative pl-6 pb-5 border-l-2 border-sky-200">
+                        <div class="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-slate-300"></div>
+                        <div class="text-xs text-slate-400">🏐 順路排球店備案（若臨時想晃去）：<strong>${vbStore.name}</strong>（${vbStore.address}）</div>
+                    </div>
+                `;
+            }
+
+            if (state.planType !== 'no_ski') {
+                timelineHtml += `
+                    <div class="relative pl-6 pb-5 border-l-2 border-sky-200">
+                        <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-sky-600 ring-4 ring-sky-100"></div>
+                        <div class="text-xs font-bold text-sky-700">🚗 結束後前往小叮噹！（16:30 報到 ｜ 17:30–20:30 滑雪）</div>
+                        <div class="font-bold text-slate-800 text-base mt-0.5">🎿 新豐小叮噹滑雪場（希望我們學得會滑雪❄️️）</div>
+                        <p class="text-xs text-slate-600 mt-1">提早一小時於 16:30 抵達領裝備、換雪衣，準備進場滑雪！</p>
+                    </div>
+                `;
+            }
+
+            if (din) {
+                const dinListHtml = din.items.map(i => `• <strong>${i.name}</strong>（${i.hours}）`).join('<br>');
+                timelineHtml += `
+                    <div class="relative pl-6 pb-1">
+                        <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-sky-500 ring-4 ring-sky-50"></div>
+                        <div class="text-xs font-bold text-sky-600">${state.planType !== 'no_ski' ? '20:30 後 · 滑完雪晚餐／宵夜' : '晚餐時光'}</div>
+                        <div class="font-bold text-slate-800 text-base mt-0.5">${din.icon} ${din.category}</div>
+                        <div class="mt-2 bg-sky-50/70 border border-sky-100 rounded-xl p-3 text-xs text-slate-700 leading-relaxed">
+                            ${dinListHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            el.innerHTML = `
+                <div class="text-center mb-6">
+                    <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-bold tracking-wider uppercase mb-2">✨</span>
+                    <h2 class="text-2xl font-bold text-slate-800">行程表已生成！</h2>
+                    <p class="text-xs text-slate-500 mt-1">${planBadgeMap[state.planType]}</p>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-sky-100 shadow-sm p-5 sm:p-6 mb-6 ticket-cutout">
+                    ${timelineHtml}
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="copyItineraryText()" class="flex-1 py-3.5 px-5 rounded-2xl bg-sky-600 hover:bg-sky-700 active:scale-[0.99] text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                        <span>複製行程文字傳給旅伴</span>
+                    </button>
+                    <button onclick="goBack()" class="py-3.5 px-5 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold text-sm transition-all">
+                        ⬅ 我再重新想一次
+                    </button>
+                    <button onclick="resetApp()" class="py-3.5 px-4 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-500 font-medium text-sm transition-all">
+                        重新開始 ↻
+                    </button>
+                </div>
+            `;
+        }
+
+        function copyItineraryText() {
+            const cityObj = DB.restaurants[state.cityKey];
+            const rest = state.restaurant;
+            const act = state.activity;
+            const subSpot = state.subSpot;
+            const vbStore = DB.volleyballStores[state.selectedVbKey || getRecommendedVbKey()];
+            const din = state.dinner;
+
+            let lines = [
+                `❄️ 【我們的小小約・行程表】`,
+                `• 出發時間：${state.departTime}（新北土城醫院出發）`,
+                `• 第一站（${cityObj.name}）：${rest ? rest.name : ''}`,
+                `  🅿 停車：${rest ? rest.parking : ''}`
+            ];
+
+            if (act) {
+                const actName = subSpot ? `${act.title} - ${subSpot.name}` : `${act.title}（${act.place}）`;
+                lines.push(`• 下午行程：${actName}`);
+            }
+
+            if (state.wantVolleyball && vbStore) {
+                lines.push(`• 順路逛排球店：🏐 ${vbStore.name}（${vbStore.address}）`);
+            }
+
+            if (state.planType !== 'no_ski') {
+                lines.push(`• 🚗 結束後前往新豐小叮噹滑雪場（16:30 報到換裝 / 17:30–20:30 滑雪，希望我們學得會滑雪！）`);
+            }
+
+            if (din) {
+                const dinNames = din.items.map(i => i.name).join(' / ');
+                lines.push(`• 晚餐宵夜：${din.category}（${dinNames}）`);
+            }
+
+            const textToCopy = lines.join('\n');
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("已複製行程文字！可以直接貼到 Line 囉！");
+            } catch (err) {
+                showToast("複製失敗，請直接截圖畫面～");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastBox');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2600);
+        }
+
+        window.onload = function () {
+            render();
+        };
+    </script>
+</body>
+</html>
